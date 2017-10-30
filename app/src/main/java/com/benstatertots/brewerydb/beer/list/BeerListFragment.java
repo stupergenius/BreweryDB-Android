@@ -3,44 +3,39 @@ package com.benstatertots.brewerydb.beer.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.benstatertots.brewerydb.R;
-import com.benstatertots.brewerydb.beer.list.dummy.DummyContent;
-import com.benstatertots.brewerydb.beer.list.dummy.DummyContent.DummyItem;
+import com.benstatertots.brewerydb.beer.list.model.BeerItem;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnBeerListFragmentInteractionListener}
  * interface.
  */
 public class BeerListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+//    private static final String ARG_COLUMN_COUNT = "column-count";
+    private OnBeerListFragmentInteractionListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
+    private List<BeerItem> mMockBeerList;
+
     public BeerListFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static BeerListFragment newInstance(int columnCount) {
+    public static BeerListFragment newInstance() {
         BeerListFragment fragment = new BeerListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+//        args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,39 +45,39 @@ public class BeerListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+//            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+        }
+
+        mMockBeerList = new ArrayList<>();
+        for (int i=0; i<25; i++) {
+            mMockBeerList.add(new BeerItem(String.valueOf(i), "Beer "+i, "Beer Description "+i, "http://i.imgur.com/DvpvklR.png"));
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_beerlist_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_beerlist, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyBeerListRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            //TODO: inject picasso?
+            recyclerView.setAdapter(new MyBeerListRecyclerViewAdapter(mMockBeerList, mListener, context));
         }
         return view;
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
+        if (context instanceof OnBeerListFragmentInteractionListener) {
+            mListener = (OnBeerListFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnListFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -96,13 +91,8 @@ public class BeerListFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+    public interface OnBeerListFragmentInteractionListener {
+        void onBeerItemTap(BeerItem item);
     }
 }

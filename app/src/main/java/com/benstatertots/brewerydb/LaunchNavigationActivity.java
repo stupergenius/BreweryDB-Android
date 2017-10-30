@@ -3,25 +3,24 @@ package com.benstatertots.brewerydb;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.benstatertots.brewerydb.beer.list.BeerListFragment;
-import com.benstatertots.brewerydb.brewery.list.BreweryListFragment;
+import com.benstatertots.brewerydb.beer.list.model.BeerItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LaunchNavigationActivity extends AppCompatActivity {
+public class LaunchNavigationActivity extends AppCompatActivity
+        implements BeerListFragment.OnBeerListFragmentInteractionListener {
 
 //    @BindView(R.id.tabs_content_container) ViewGroup mTabsContainer;
-    @BindView(R.id.navigation) BottomNavigationView mBottomNav;
+    @BindView(R.id.navigation) protected BottomNavigationView mBottomNav;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -29,28 +28,21 @@ public class LaunchNavigationActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment tabFrag = null;
+            final FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            transaction.hide(fragmentManager.findFragmentById(R.id.beerlist));
+            transaction.hide(fragmentManager.findFragmentById(R.id.brewerylist));
+
             switch (item.getItemId()) {
                 case R.id.navigation_beers:
-                    tabFrag = fragmentManager.findFragmentById(R.id.beerlist_list);
-                    if (tabFrag == null) {
-                        tabFrag = new BeerListFragment();
-                    }
+                    transaction.show(fragmentManager.findFragmentById(R.id.beerlist));
                     break;
                 case R.id.navigation_breweries:
-                    tabFrag = fragmentManager.findFragmentById(R.id.brewerylist_list);
-                    if (tabFrag == null) {
-                        tabFrag = new BreweryListFragment();
-                    }
+                    transaction.show(fragmentManager.findFragmentById(R.id.brewerylist));
                     break;
             }
 
-            if (tabFrag == null) {
-                return false;
-            }
-
-            final FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.tabs_content_container, tabFrag).commit();
+            transaction.commit();
 
             return true;
         }
@@ -66,4 +58,8 @@ public class LaunchNavigationActivity extends AppCompatActivity {
         mBottomNav.setSelectedItemId(R.id.navigation_beers);
     }
 
+    @Override
+    public void onBeerItemTap(BeerItem item) {
+        Log.d("brewdb", "item tapped: "+item.id);
+    }
 }

@@ -18,6 +18,16 @@
             android:id="@+id/tabs_content_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <fragment
+                android:name="com.benstatertots.brewerydb.beer.list.BeerListFragment"
+                android:id="@+id/beerlist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <fragment
+                android:name="com.benstatertots.brewerydb.brewery.list.BreweryListFragment"
+                android:id="@+id/brewerylist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </FrameLayout>
 
     </FrameLayout>
