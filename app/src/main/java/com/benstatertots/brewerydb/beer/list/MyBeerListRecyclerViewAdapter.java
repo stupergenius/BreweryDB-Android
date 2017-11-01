@@ -1,8 +1,11 @@
 package com.benstatertots.brewerydb.beer.list;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,16 +26,23 @@ import java.util.List;
  */
 public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerListRecyclerViewAdapter.ViewHolder> {
 
-    private final List<BeerItem> mValues;
+    private final LiveData<List<BeerItem>> mValues;
     private final BeerListFragment.OnBeerListFragmentInteractionListener mListener;
     private final Context mContext;
     private final Drawable mPlaceholder;
 
-    public MyBeerListRecyclerViewAdapter(List<BeerItem> items, BeerListFragment.OnBeerListFragmentInteractionListener listener, Context context) {
+    public MyBeerListRecyclerViewAdapter(LiveData<List<BeerItem>> items, BeerListFragment.OnBeerListFragmentInteractionListener listener, Context context) {
         mValues = items;
         mListener = listener;
         mContext = context;
         mPlaceholder = AppCompatResources.getDrawable(mContext, R.drawable.ic_beers_black_100dp);
+
+        mValues.observe(null, new Observer<List<BeerItem>>() {
+            @Override
+            public void onChanged(@Nullable List<BeerItem> beerItems) {
+                MyBeerListRecyclerViewAdapter.this.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -44,7 +54,7 @@ public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerLi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        BeerItem item = mValues.get(position);
+        BeerItem item = mValues.getValue().get(position);
         holder.mItem = item;
         holder.mTitleTextView.setText(item.title);
         holder.mSubtitleTextView.setText(item.description);
@@ -70,7 +80,7 @@ public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerLi
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mValues.getValue().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -1,7 +1,9 @@
 package com.benstatertots.brewerydb.beer.list;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,7 +28,8 @@ public class BeerListFragment extends Fragment {
 //    private static final String ARG_COLUMN_COUNT = "column-count";
     private OnBeerListFragmentInteractionListener mListener;
 
-    private List<BeerItem> mMockBeerList;
+    private RecyclerView mView;
+    private BeerListViewModel mViewModel;
 
     public BeerListFragment() {
     }
@@ -41,16 +44,17 @@ public class BeerListFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(BeerListViewModel.class);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
 //            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
-
-        mMockBeerList = new ArrayList<>();
-        for (int i=0; i<25; i++) {
-            mMockBeerList.add(new BeerItem(String.valueOf(i), "Beer "+i, "Beer Description "+i, "http://i.imgur.com/DvpvklR.png"));
         }
     }
 
@@ -61,10 +65,10 @@ public class BeerListFragment extends Fragment {
 
         // Set the adapter
         if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            mView = (RecyclerView) view;
+            Context context = mView.getContext();
             //TODO: inject picasso?
-            recyclerView.setAdapter(new MyBeerListRecyclerViewAdapter(mMockBeerList, mListener, context));
+            mView.setAdapter(new MyBeerListRecyclerViewAdapter(mViewModel.getBeerList(), mListener, context));
         }
         return view;
     }
