@@ -1,5 +1,7 @@
 package com.benstatertots.brewerydb.beer.list;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,10 +14,13 @@ import android.view.ViewGroup;
 
 import com.benstatertots.brewerydb.R;
 import com.benstatertots.brewerydb.beer.list.model.BeerItem;
+import com.benstatertots.brewerydb.di.Injectable;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * A fragment representing a list of Items.
@@ -23,39 +28,50 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnBeerListFragmentInteractionListener}
  * interface.
  */
-public class BeerListFragment extends Fragment {
+public class BeerListFragment extends Fragment implements Injectable {
 
-//    private static final String ARG_COLUMN_COUNT = "column-count";
     private OnBeerListFragmentInteractionListener mListener;
 
     private RecyclerView mView;
     private BeerListViewModel mViewModel;
 
-    public BeerListFragment() {
-    }
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+    private MyBeerListRecyclerViewAdapter mBeerAdapter;
 
-    @SuppressWarnings("unused")
-    public static BeerListFragment newInstance() {
-        BeerListFragment fragment = new BeerListFragment();
-        Bundle args = new Bundle();
-//        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
+    public BeerListFragment() {
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(BeerListViewModel.class);
+
+        mViewModel = ViewModelProviders.of(this, viewModelFactory).get(BeerListViewModel.class);
+
+        Context context = mView.getContext();
+        //TODO: inject picasso?
+        mBeerAdapter = new MyBeerListRecyclerViewAdapter(mViewModel.getBeerList().getValue(), mListener, context);
+        mView.setAdapter(mBeerAdapter);
+
+        mViewModel.getBeerList().observe(this, new Observer<List<BeerItem>>() {
+            @Override
+            public void onChanged(@Nullable List<BeerItem> beerItems) {
+                if (beerItems == null || beerItems.size() == 0) {
+                    mBeerAdapter.setBeers(new ArrayList<BeerItem>());
+                } else {
+                    mBeerAdapter.setBeers(beerItems);
+                }
+            }
+        });
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
+//        if (getArguments() != null) {
 //            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
+//        }
     }
 
     @Override
@@ -66,9 +82,6 @@ public class BeerListFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             mView = (RecyclerView) view;
-            Context context = mView.getContext();
-            //TODO: inject picasso?
-            mView.setAdapter(new MyBeerListRecyclerViewAdapter(mViewModel.getBeerList(), mListener, context));
         }
         return view;
     }

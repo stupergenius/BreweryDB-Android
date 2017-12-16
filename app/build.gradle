@@ -26,11 +26,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-
-
+    compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.+'
     compile 'com.android.support:support-vector-drawable:26.+'
+    compile 'com.google.collections:google-collections:1.0'
     compile 'com.google.dagger:dagger:2.12'
     compile 'com.google.dagger:dagger-android:2.12'
     compile 'com.google.dagger:dagger-android-support:2.12'

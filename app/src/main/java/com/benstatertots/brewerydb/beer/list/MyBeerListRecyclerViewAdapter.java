@@ -1,11 +1,7 @@
 package com.benstatertots.brewerydb.beer.list;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,23 +22,20 @@ import java.util.List;
  */
 public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerListRecyclerViewAdapter.ViewHolder> {
 
-    private final LiveData<List<BeerItem>> mValues;
+    private List<BeerItem> mBeers;
     private final BeerListFragment.OnBeerListFragmentInteractionListener mListener;
     private final Context mContext;
     private final Drawable mPlaceholder;
 
-    public MyBeerListRecyclerViewAdapter(LiveData<List<BeerItem>> items, BeerListFragment.OnBeerListFragmentInteractionListener listener, Context context) {
-        mValues = items;
+    public MyBeerListRecyclerViewAdapter(List<BeerItem> items, BeerListFragment.OnBeerListFragmentInteractionListener listener, Context context) {
+        mBeers = items;
         mListener = listener;
         mContext = context;
         mPlaceholder = AppCompatResources.getDrawable(mContext, R.drawable.ic_beers_black_100dp);
+    }
 
-        mValues.observe(null, new Observer<List<BeerItem>>() {
-            @Override
-            public void onChanged(@Nullable List<BeerItem> beerItems) {
-                MyBeerListRecyclerViewAdapter.this.notifyDataSetChanged();
-            }
-        });
+    public void setBeers(List<BeerItem> items) {
+        mBeers = items;
     }
 
     @Override
@@ -54,16 +47,16 @@ public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerLi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        BeerItem item = mValues.getValue().get(position);
+        BeerItem item = mBeers.get(position);
         holder.mItem = item;
-        holder.mTitleTextView.setText(item.title);
-        holder.mSubtitleTextView.setText(item.description);
+        holder.mTitleTextView.setText(item.name);
+        holder.mSubtitleTextView.setText("Description " + item.id);
 
-        if (item.imageUrl == null || item.imageUrl.isEmpty()) {
+        if (item.labels.large == null || item.labels.large.isEmpty()) {
             holder.mImageView.setImageDrawable(mPlaceholder);
         } else {
             Picasso.with(mContext)
-                    .load(item.imageUrl)
+                    .load(item.labels.large)
                     .placeholder(mPlaceholder)
                     .into(holder.mImageView);
         }
@@ -80,7 +73,7 @@ public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerLi
 
     @Override
     public int getItemCount() {
-        return mValues.getValue().size();
+        return mBeers.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

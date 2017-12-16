@@ -4,10 +4,13 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.benstatertots.brewerydb.api.IWebService;
 import com.benstatertots.brewerydb.beer.list.model.BeerItem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class BeerListViewModel extends ViewModel {
 
@@ -16,13 +19,14 @@ public class BeerListViewModel extends ViewModel {
         return mBeerList;
     }
 
-    public BeerListViewModel() {
-        List<BeerItem> beers = new ArrayList<>();
-        for (int i=0; i<25; i++) {
-            beers.add(new BeerItem(String.valueOf(i), "Beer "+i, "Beer Description "+i, "http://i.imgur.com/DvpvklR.png"));
-        }
+    private IWebService mWebService;
+
+    @Inject
+    public BeerListViewModel(IWebService webService) {
+        mWebService = webService;
+
         MutableLiveData<List<BeerItem>> mutableBeers = new MutableLiveData<>();
-        mutableBeers.setValue(beers);
+        mutableBeers.setValue(mWebService.getBeers());
         mBeerList = mutableBeers;
     }
 }

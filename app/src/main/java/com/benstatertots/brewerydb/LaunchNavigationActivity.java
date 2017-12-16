@@ -3,6 +3,7 @@ package com.benstatertots.brewerydb;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -12,15 +13,27 @@ import android.view.MenuItem;
 import com.benstatertots.brewerydb.beer.list.BeerListFragment;
 import com.benstatertots.brewerydb.beer.list.model.BeerItem;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 public class LaunchNavigationActivity extends AppCompatActivity
-        implements BeerListFragment.OnBeerListFragmentInteractionListener {
+        implements BeerListFragment.OnBeerListFragmentInteractionListener,
+        HasSupportFragmentInjector {
 
 //    @BindView(R.id.tabs_content_container) ViewGroup mTabsContainer;
     @BindView(R.id.navigation) protected BottomNavigationView mBottomNav;
 
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+
+    @Override
+    public DispatchingAndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
+    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
