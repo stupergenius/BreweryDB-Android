@@ -37,7 +37,9 @@ public class BeerListFragment extends Fragment implements Injectable {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
-    private MyBeerListRecyclerViewAdapter mBeerAdapter;
+
+    @Inject
+    protected MyBeerListRecyclerViewAdapter mBeerAdapter;
 
     public BeerListFragment() {
     }
@@ -47,10 +49,6 @@ public class BeerListFragment extends Fragment implements Injectable {
         super.onActivityCreated(savedInstanceState);
 
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(BeerListViewModel.class);
-
-        Context context = mView.getContext();
-        //TODO: inject picasso?
-        mBeerAdapter = new MyBeerListRecyclerViewAdapter(mViewModel.getBeerList().getValue(), mListener, context);
         mView.setAdapter(mBeerAdapter);
 
         mViewModel.getBeerList().observe(this, new Observer<List<BeerItem>>() {

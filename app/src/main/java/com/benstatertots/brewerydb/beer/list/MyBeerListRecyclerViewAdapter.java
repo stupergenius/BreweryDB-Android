@@ -14,6 +14,7 @@ import com.benstatertots.brewerydb.R;
 import com.benstatertots.brewerydb.beer.list.model.BeerItem;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,19 +24,27 @@ import java.util.List;
 public class MyBeerListRecyclerViewAdapter extends RecyclerView.Adapter<MyBeerListRecyclerViewAdapter.ViewHolder> {
 
     private List<BeerItem> mBeers;
-    private final BeerListFragment.OnBeerListFragmentInteractionListener mListener;
+    private BeerListFragment.OnBeerListFragmentInteractionListener mListener;
     private final Context mContext;
     private final Drawable mPlaceholder;
+    private final Picasso mPicasso;
 
-    public MyBeerListRecyclerViewAdapter(List<BeerItem> items, BeerListFragment.OnBeerListFragmentInteractionListener listener, Context context) {
-        mBeers = items;
-        mListener = listener;
+    public MyBeerListRecyclerViewAdapter(Context context, Picasso picasso) {
+        mBeers = new ArrayList<>();
         mContext = context;
         mPlaceholder = AppCompatResources.getDrawable(mContext, R.drawable.ic_beers_black_100dp);
+        mPicasso = picasso;
     }
 
     public void setBeers(List<BeerItem> items) {
         mBeers = items;
+        this.notifyDataSetChanged();
+        //TODO: use diffutil to only notify about the changed items, e.g:
+        // https://stackoverflow.com/questions/44489235/update-recyclerview-with-android-livedata
+    }
+
+    public void setmListener(BeerListFragment.OnBeerListFragmentInteractionListener mListener) {
+        this.mListener = mListener;
     }
 
     @Override
